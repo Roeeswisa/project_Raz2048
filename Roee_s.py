@@ -10,7 +10,8 @@ HEIGHT = 500
 screen = pygame.display.set_mode([WIDTH, HEIGHT])
 pygame.display.set_caption('Roee Swisa: 2048')
 font = pygame.font.SysFont('Ariel', 24)
-
+spawn_new = True
+init_count = 0
 
 
 colors = {0: (204, 192, 179), 
@@ -31,13 +32,30 @@ colors = {0: (204, 192, 179),
           'bg': (187, 173, 160)}
 
 board_values = [[0 for _ in range(4)] for _ in range(4)]
-
+game_over = False
 
 #מצייר את הרקע
 def draw_board():
    pygame.draw.rect(screen, colors['bg'], [0, 0, 400, 400], 0, 10)
    pass
 
+#משרטט קוביות רנדמליות
+def generate_new_pieces(board):
+    count = 0
+    full_board = True
+    while any(0 in row for row in board):
+        if count == 1:
+            return board, full_board
+        row = random.randint(0, 3)
+        col = random.randint(0, 3)
+        if board[col][row] == 0:
+            full_board = False
+            count = 1
+            if random.randint(1, 10) == 10:
+                board[col][row] = 4   
+            else:
+                board[col][row] = 2
+    return board, full_board
 
 
 #מצייר את הקוביות
@@ -68,11 +86,22 @@ while run:
     screen.fill('grey')
     draw_board()
     draw_pieces(board_values)
-    
+    if spawn_new or init_count < 2:
+        board_values, game_over = generate_new_pieces(board_values)
+        spawn_new = False
+        init_count += 1
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             run = False
+        if event.type == pygame.K_UP:
+            direction = 'UP'
+        elif event.type == pygame.K_DOWN:
+            direction = 'DOWN'
+        elif event.type == pygame.K_LEFT:
+            direction = 'LEFT'
+        elif event.type == pygame.K_RIGHT:
+            direction = 'RIGHT'
         
     
     pygame.display.flip()
