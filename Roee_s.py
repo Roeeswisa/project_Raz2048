@@ -12,6 +12,7 @@ pygame.display.set_caption('Roee Swisa: 2048')
 font = pygame.font.SysFont('Ariel', 24)
 spawn_new = True
 init_count = 0
+direction = ''
 
 
 colors = {0: (204, 192, 179), 
@@ -80,7 +81,43 @@ def draw_pieces(board):
                 screen.blit(value_text, text_rect)
 
 
- 
+ #תור
+def take_turn(direc, board):
+    merged = [[False for _ in range(4)] for _ in range(4)]
+    if direc == 'UP':
+        for i in range(4):
+            for j in range(4):
+                shift = 0
+                if i > 0 :
+                
+                    for q in range(i):
+                        if board[q][j] == 0:
+                            shift += 1
+                    if shift > 0:
+                        board[ i - shift][j] = board[i][j]
+                        board[i][j] = 0
+      
+
+    elif direc == 'DOWN':
+        pass
+
+    elif direc == 'LEFT':
+        pass
+
+    elif direc == 'RIGHT':
+        pass
+
+
+
+
+
+
+
+
+
+
+
+
 #המשחק הראשי
 while run:
     screen.fill('grey')
@@ -90,6 +127,10 @@ while run:
         board_values, game_over = generate_new_pieces(board_values)
         spawn_new = False
         init_count += 1
+    if direction != '':
+        board_values = take_turn(direction, board_values)
+        direction = ''
+        spawn_new = True
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
