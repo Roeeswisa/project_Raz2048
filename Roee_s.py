@@ -15,6 +15,7 @@ init_count = 0
 direction = ''
 
 
+
 colors = {0: (204, 192, 179), 
           2: (238, 228, 218), 
           4: (237, 224, 200), 
@@ -83,29 +84,74 @@ def draw_pieces(board):
 
  #תור
 def take_turn(direc, board):
-    merged = [[False for _ in range(4)] for _ in range(4)]
     if direc == 'UP':
-        for i in range(4):
-            for j in range(4):
-                shift = 0
-                if i > 0 :
-                
-                    for q in range(i):
-                        if board[q][j] == 0:
-                            shift += 1
-                    if shift > 0:
-                        board[ i - shift][j] = board[i][j]
-                        board[i][j] = 0
-      
+        merged = [[False for _ in range(4)] for _ in range(4)]
+        for col in range(4): 
+            temp_col = []
+            for row in range(4):
+                if board[row][col] != 0:
+                    temp_col.append(board[row][col])
+            for i in range(len(temp_col) - 1):
+                if temp_col[i] == temp_col[i + 1] and not merged[i][col]:
+                    temp_col[i] *= 2
+                    temp_col[i + 1] = 0
+                    merged[i][col] = True
+            
+            while 0 in temp_col:
+                temp_col.remove(0)
+            while len(temp_col) < 4: 
+                temp_col.append(0)
+            for row in range(4):
+                board[row][col] = temp_col[row]
 
     elif direc == 'DOWN':
-        pass
+        merged = [[False for _ in range(4)] for _ in range(4)]
+        for col in range(4):
+            temp_col = []
+            for row in range(3, -1, -1):  
+                if board[row][col] != 0:
+                    temp_col.append(board[row][col])
+            for i in range(len(temp_col) - 1):
+                if temp_col[i] == temp_col[i + 1] and not merged[i][col]:
+                    temp_col[i] *= 2
+                    temp_col[i + 1] = 0
+                    merged[i][col] = True
+            
+            while 0 in temp_col:
+                temp_col.remove(0)
+            while len(temp_col) < 4:
+                temp_col.append(0)
+            for row in range(3, -1, -1):  
+                board[row][col] = temp_col[3 - row]
+             
 
     elif direc == 'LEFT':
-        pass
+        merged = [[False for _ in range(4)] for _ in range(4)]
+        for col in range(4):
+            temp_col = []
+            for row in range(4):
+                if board[row][col] != 0:
+                    temp_col.append(board[row][col])
+            for i in range(len(temp_col) -1):
+                
+
+
+
+
+
+
+
+                                            
+                
+
+        
 
     elif direc == 'RIGHT':
         pass
+
+
+
+    return board
 
 
 
@@ -131,18 +177,19 @@ while run:
         board_values = take_turn(direction, board_values)
         direction = ''
         spawn_new = True
-
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             run = False
-        if event.type == pygame.K_UP:
-            direction = 'UP'
-        elif event.type == pygame.K_DOWN:
-            direction = 'DOWN'
-        elif event.type == pygame.K_LEFT:
-            direction = 'LEFT'
-        elif event.type == pygame.K_RIGHT:
-            direction = 'RIGHT'
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_UP:
+                direction = 'UP'
+            elif event.key == pygame.K_DOWN:
+                direction = 'DOWN'
+            elif event.key == pygame.K_LEFT:
+                direction = 'LEFT'
+            elif event.key == pygame.K_RIGHT:
+                direction = 'RIGHT'
+
         
     
     pygame.display.flip()
