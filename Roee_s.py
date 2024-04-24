@@ -13,7 +13,7 @@ font = pygame.font.SysFont('Ariel', 24)
 spawn_new = True
 init_count = 0
 direction = ''
-
+score = 0
 
 
 colors = {0: (204, 192, 179), 
@@ -39,6 +39,8 @@ game_over = False
 #מצייר את הרקע
 def draw_board():
    pygame.draw.rect(screen, colors['bg'], [0, 0, 400, 400], 0, 10)
+   score_text = font.render(f'Score: {score}', True, 'black')
+   screen.blit(score_text, (10, 410))
    pass
 
 #משרטט קוביות רנדמליות
@@ -84,85 +86,88 @@ def draw_pieces(board):
 
  #תור
 def take_turn(direc, board):
+    global score
     if direc == 'UP':
         merged = [[False for _ in range(4)] for _ in range(4)]
-        for col in range(4): 
-            temp_col = []
-            for row in range(4):
-                if board[row][col] != 0:
-                    temp_col.append(board[row][col])
-            for i in range(len(temp_col) - 1):
-                if temp_col[i] == temp_col[i + 1] and not merged[i][col]:
-                    temp_col[i] *= 2
-                    temp_col[i + 1] = 0
-                    merged[i][col] = True
-            
-            while 0 in temp_col:
-                temp_col.remove(0)
-            while len(temp_col) < 4: 
-                temp_col.append(0)
-            for row in range(4):
-                board[row][col] = temp_col[row]
+        for i in range(4): 
+            for j in range(4):
+                shift = 0
+                if i > 0:
+                    #בודקים אם הוא בשורה האחרונה
+                    for q in range(i):
+                        if board[q][j] == 0:
+                            shift += 1
+                    if shift > 0:
+                        board[i - shift][j] = board[i][j]
+                        board[i][j] = 0
+                    if board[i - shift - 1][j] == board[i - shift][j] and not merged[i - shift][j] \
+                        and not merged[i - shift - 1][j]:
+                        board[i - shift - 1 ][j] *= 2
+                        score += board[i - shift - 1 ][j]
+                        board[i - shift][j] = 0
+                        merged[i - shift - 1][j] = True
+
 
     elif direc == 'DOWN':
         merged = [[False for _ in range(4)] for _ in range(4)]
-        for col in range(4):
-            temp_col = []
-            for row in range(3, -1, -1):  
-                if board[row][col] != 0:
-                    temp_col.append(board[row][col])
-            for i in range(len(temp_col) - 1):
-                if temp_col[i] == temp_col[i + 1] and not merged[i][col]:
-                    temp_col[i] *= 2
-                    temp_col[i + 1] = 0
-                    merged[i][col] = True
-            
-            while 0 in temp_col:
-                temp_col.remove(0)
-            while len(temp_col) < 4:
-                temp_col.append(0)
-            for row in range(3, -1, -1):  
-                board[row][col] = temp_col[3 - row]
-             
+        for i in range(3):
+            for j in range(4):
+                shift = 0
+                for q in range(i + 1):
+                    if board[3 - q][j] == 0:
+                        shift += 1
+                if shift > 0:
+                    board[2 - i + shift][j] = board[2 - i][j]
+                    board[2 - i][j] = 0
+                if 3 - i + shift <= 3:
+                    if board[2 - i + shift][j] == board[3 - i + shift][j] and not merged[3 - i + shift][j] \
+                        and not merged[2 - i + shift][j]:
+                        board[3 - i + shift][j] *= 2
+                        score += board[3 - i + shift][j]
+                        board[2 - i][j] = 0
+                        merged[3 - i + shift][j] = True
+
 
     elif direc == 'LEFT':
         merged = [[False for _ in range(4)] for _ in range(4)]
-        for col in range(4):
-            temp_col = []
-            for row in range(4):
-                if board[row][col] != 0:
-                    temp_col.append(board[row][col])
-            for i in range(len(temp_col) -1):
-                
-
-
-
-
-
-
-
-                                            
-                
-
-        
+        for i in range(4):
+            for j in range(4):
+                shift = 0
+                for q in range(j):
+                    if board[i][q] == 0:
+                        shift += 1
+                if shift > 0:
+                    board[i][j - shift] = board[i][j]
+                    board[i][j] = 0
+                if board[i][j - shift] == board[i][j - shift - 1] and not merged[i][j - shift - 1] \
+                    and not merged[i][j - shift]:
+                    board[i][j - shift - 1] *= 2
+                    score += board[i][j - shift - 1]
+                    board[i][j - shift] = 0
+                    merged[i][j - shift - 1] = True
+      
 
     elif direc == 'RIGHT':
-        pass
-
+        merged = [[False for _ in range(4)] for _ in range(4)]
+        for i in range(4):
+            for j in range(4):
+                shift = 0
+                for q in range(j):
+                    if board[i][3 - q] == 0:
+                        shift += 1
+                if shift > 0:
+                    board[i][3 - j + shift] = board[i][3 - j]
+                    board[i][3 - j] = 0
+                if 4 - j + shift <=3:
+                    if board[i][4 - j + shift] == board[i][3 - j + shift] and not merged[i][4 - j + shift] \
+                    and not merged[i][3 - j + shift]:
+                        board[i][4 - j + shift] *= 2
+                        score += board[i][4 - j + shift]
+                        board[i][3 - j + shift] = 0
+                        merged[i][4 - j + shift]
 
 
     return board
-
-
-
-
-
-
-
-
-
-
-
 
 #המשחק הראשי
 while run:
