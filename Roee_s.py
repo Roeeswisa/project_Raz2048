@@ -10,6 +10,7 @@ HEIGHT = 500
 screen = pygame.display.set_mode([WIDTH, HEIGHT])
 pygame.display.set_caption('Roee Swisa: 2048')
 font = pygame.font.SysFont('Ariel', 24)
+game_over_font = pygame.font.SysFont('Ariel', 33)
 spawn_new = True
 init_count = 0
 direction = ''
@@ -109,7 +110,7 @@ def take_turn(direc, board):
 
 
     elif direc == 'DOWN':
-        merged = [[False for _ in range(4)] for _ in range(4)]
+        merged = [[False for _ in range(4)] for _ in range(4)] 
         for i in range(3):
             for j in range(4):
                 shift = 0
@@ -178,6 +179,10 @@ while run:
         board_values, game_over = generate_new_pieces(board_values)
         spawn_new = False
         init_count += 1
+    if game_over:
+        game_over_text = game_over_font.render("Game over your final score: " + str(score), True, (20, 20, 0))
+        screen.blit(game_over_text, (35, 180))
+
     if direction != '':
         board_values = take_turn(direction, board_values)
         direction = ''
