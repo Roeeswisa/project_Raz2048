@@ -3,6 +3,7 @@ import pygame
  
 pygame.init()
 
+
 run = True
 
 WIDTH = 400
@@ -15,6 +16,18 @@ spawn_new = True
 init_count = 0
 direction = ''
 score = 0
+high_score_file = open('high_score', 'r')
+if len() > 0:
+    init_high = int(high_score_file.read())
+high_score_file.close()
+high_score = init_high
+play_sound = True
+merged_sound = 'C:\\Users\\ניצנים\\Documents\\project_Raz2048\\678742__cloud-10__martin-garrix-animals-drop-pluck-original.wav'
+game_over_music = 'C:\\Users\\ניצנים\\Documents\\project_Raz2048\\173859__jivatma07__j1game_over_mono.wav'
+bg_music = 'C:\\Users\\ניצנים\\Documents\\project_Raz2048\\scott-buckley-permafrost(chosic.com).mp3'
+
+pygame.mixer.music.load(bg_music)
+pygame.mixer.music.play(-1)
 
 
 colors = {0: (204, 192, 179), 
@@ -37,11 +50,15 @@ colors = {0: (204, 192, 179),
 board_values = [[0 for _ in range(4)] for _ in range(4)]
 game_over = False
 
+
 #מצייר את הרקע
 def draw_board():
    pygame.draw.rect(screen, colors['bg'], [0, 0, 400, 400], 0, 10)
    score_text = font.render(f'Score: {score}', True, 'black')
+   high_score_text = font.render(f'High Score: {high_score}', True, 'black')
    screen.blit(score_text, (10, 410))
+   screen.blit(high_score_text, (10, 450))
+
    pass
 
 #משרטט קוביות רנדמליות
@@ -103,12 +120,12 @@ def take_turn(direc, board):
                         board[i][j] = 0
                     if board[i - shift - 1][j] == board[i - shift][j] and not merged[i - shift][j] \
                         and not merged[i - shift - 1][j]:
+                        pygame.mixer.music.load(merged_sound)
+                        pygame.mixer.music.play()
                         board[i - shift - 1 ][j] *= 2
                         score += board[i - shift - 1 ][j]
                         board[i - shift][j] = 0
                         merged[i - shift - 1][j] = True
-
-
     elif direc == 'DOWN':
         merged = [[False for _ in range(4)] for _ in range(4)] 
         for i in range(3):
@@ -123,6 +140,8 @@ def take_turn(direc, board):
                 if 3 - i + shift <= 3:
                     if board[2 - i + shift][j] == board[3 - i + shift][j] and not merged[3 - i + shift][j] \
                         and not merged[2 - i + shift][j]:
+                        pygame.mixer.music.load(merged_sound)
+                        pygame.mixer.music.play()
                         board[3 - i + shift][j] *= 2
                         score += board[3 - i + shift][j]
                         board[2 - i][j] = 0
@@ -142,6 +161,8 @@ def take_turn(direc, board):
                     board[i][j] = 0
                 if board[i][j - shift] == board[i][j - shift - 1] and not merged[i][j - shift - 1] \
                     and not merged[i][j - shift]:
+                    pygame.mixer.music.load(merged_sound)
+                    pygame.mixer.music.play()
                     board[i][j - shift - 1] *= 2
                     score += board[i][j - shift - 1]
                     board[i][j - shift] = 0
@@ -162,11 +183,15 @@ def take_turn(direc, board):
                 if 4 - j + shift <=3:
                     if board[i][4 - j + shift] == board[i][3 - j + shift] and not merged[i][4 - j + shift] \
                     and not merged[i][3 - j + shift]:
+                        pygame.mixer.music.load(merged_sound)
+                        pygame.mixer.music.play()
                         board[i][4 - j + shift] *= 2
                         score += board[i][4 - j + shift]
                         board[i][3 - j + shift] = 0
                         merged[i][4 - j + shift]
 
+    if high_score < score:
+        high_score = score
 
     return board
 
@@ -180,8 +205,13 @@ while run:
         spawn_new = False
         init_count += 1
     if game_over:
+        if play_sound:
+            endGame_sound = pygame.mixer.Sound(game_over_music)
+            endGame_sound.play()
+            play_sound = False
         game_over_text = game_over_font.render("Game over your final score: " + str(score), True, (20, 20, 0))
         screen.blit(game_over_text, (35, 180))
+
 
     if direction != '':
         board_values = take_turn(direction, board_values)
@@ -200,7 +230,11 @@ while run:
             elif event.key == pygame.K_RIGHT:
                 direction = 'RIGHT'
 
-        
+    if score > high_score:
+        data_file = open('high_score', 'w')
+        score.high_score.write(str(score))
+        high_score.close
+
     
     pygame.display.flip()
 pygame.quit()
